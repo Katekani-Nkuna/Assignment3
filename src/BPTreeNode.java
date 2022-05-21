@@ -122,6 +122,7 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 	public BPTreeNode<TKey, TValue> insert(TKey key, TValue value) 
 	{
 		// Search for leaf node key
+
 		BPTreeNode<TKey, TValue> node = getLeafNode(key);
 		BPTreeNode<TKey, TValue> danglingNode = null;
 		while (true){
