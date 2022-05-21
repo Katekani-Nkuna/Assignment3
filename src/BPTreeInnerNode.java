@@ -36,4 +36,83 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 	////// Implement functions below this line //////
 
+	public BPTreeNode<TKey, TValue> innerInsert(TKey key){
+
+		int i = this.getKeyCount()-1;
+
+		//find place to insert key
+		while (i >= 0 && key.compareTo(this.getKey(i)) < 0){
+			this.setKey(i+1, this.getKey(i));
+			i--;
+		}
+
+		this.setKey(i+1, key);
+		this.keyTally++;
+
+		return this;
+	}
+
+	public BPTreeNode<TKey, TValue> innerSplit(TKey key, BPTreeNode<TKey, TValue> danglingNode){
+		BPTreeInnerNode<TKey, TValue> node2 = new BPTreeInnerNode<>(m);
+		BPTreeInnerNode<TKey, TValue> temp = new BPTreeInnerNode<>(m+1);
+
+//		if (danglingNode != null)
+//			danglingNode = this.attacheNewNode(danglingNode);
+
+		//Copy node keys and values to temp which is 1 space bigger than m to accomodate new key,value
+		//Only used for sorting purpose
+		for (int i = 0; i < this.getKeyCount(); i++){
+			temp.innerInsert(this.getKey(i));
+			//clear node so it can have an equal redistribution
+			this.setKey(i,null);
+		}
+
+		//insert new value on temp
+		temp.innerInsert(key);
+		this.keyTally = 0;
+		int mid = m/2;
+
+		for (int i = 0; i < mid; i++){
+			this.innerInsert(temp.getKey(i));
+		}
+
+		this.setChild(mid,this.getChild(mid));
+
+		for (int i = mid; i < temp.getKeyCount(); i++ ){
+			node2.innerInsert(temp.getKey(i));
+
+			//redistribute references
+			node2.setChild(i, this.getChild(i+1));
+		}
+
+		node2.setChild(m,danglingNode);
+
+		return node2;
+	}
+
+	public BPTreeNode<TKey, TValue> attacheNewNode(BPTreeNode<TKey, TValue> newNode){
+		int i = this.getKeyCount();
+
+		BPTreeNode<TKey, TValue> danglingNode = null;
+		//if the parent node is full, then either it's last ref or previous
+		if (i == m){
+			if (newNode.getKey(0).compareTo(this.getChild(i).getKey(0)) < 0){
+				danglingNode = this.getChild(i);
+			}
+			else {
+				return newNode;
+			}
+		}
+
+		while (i >= 0 && newNode.getKey(0).compareTo( this.getChild(i).getKey(0)) < 0){
+			this.setChild(i+1, this.getChild(i));
+			i--;
+		}
+
+		this.setChild(i+1, newNode);
+
+		return danglingNode;
+	}
+
+
 }

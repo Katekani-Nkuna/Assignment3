@@ -102,7 +102,15 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 	 */
 	public TValue search(TKey key) 
 	{
-		// Your code goes here
+		BPTreeNode<TKey, TValue> node = getLeafNode(key);
+		//find key on the leaf node
+		for (int i = 0; i < node.getKeyCount(); i++) {
+			if (key.equals(node.getKey(i))) {
+				return ((BPTreeLeafNode<TKey, TValue>) node).getValue(i);
+			}
+		}
+
+		return null;
 	}
 
 
@@ -113,7 +121,59 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 	 */
 	public BPTreeNode<TKey, TValue> insert(TKey key, TValue value) 
 	{
-		// Your code goes here
+		// Search for leaf node key
+		BPTreeNode<TKey, TValue> node = getLeafNode(key);
+		BPTreeNode<TKey, TValue> danglingNode = null;
+		while (true){
+			//leaf node not full
+			if (node.getKeyCount() < m){
+				//insert Key and increment keyTally;
+				if (node.isLeaf())
+					((BPTreeLeafNode<TKey, TValue>)node).leafInsert(key,value);
+				else
+					((BPTreeInnerNode<TKey, TValue>)node).innerInsert(key);
+				return this;
+			}
+			else{
+				/*split node into node1 and node2;
+				node1 = node, node2 is new;
+				distribute keys and references evenly between node1 and node2 and
+				initialize properly their keyTally’s;*/
+				BPTreeNode<TKey, TValue> newNode = null;
+				if (node.isLeaf()){
+					newNode = ((BPTreeLeafNode<TKey, TValue>)node).leafSplit(key,value);
+					key = newNode.getKey(0);
+				}
+				else {
+					newNode = ((BPTreeInnerNode<TKey, TValue>)node).innerSplit(key,danglingNode);
+				}
+
+				BPTreeInnerNode<TKey, TValue> parent = (BPTreeInnerNode<TKey, TValue>)node.getParent();
+				//if node is root
+				if (parent == null){
+					BPTreeInnerNode<TKey, TValue> newRoot = new BPTreeInnerNode<>(m);
+					newRoot.setKey(0, key);
+					newRoot.keyTally = 1;
+
+					newRoot.setChild(0,node);
+					newRoot.setChild(1, newNode);
+
+					node.setParent(newRoot);
+					newNode.setParent(newRoot);
+
+					return newRoot;
+				}
+				else {
+
+					//Attach newNode on an appropriate place
+					danglingNode = parent.attacheNewNode(newNode);
+					node = parent;
+				}
+			}
+
+
+		}
+
 	}
 
 
@@ -125,6 +185,7 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 	public BPTreeNode<TKey, TValue> delete(TKey key) 
 	{
 		// Your code goes here
+		return null;
 	}
 
 
@@ -136,7 +197,60 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 	@SuppressWarnings("unchecked")
 	public TValue[] values() 
 	{
-		// Your code goes here
+		BPTreeNode<TKey, TValue> temp = this;
+
+		//go to the leftmost node;
+		while (!temp.isLeaf())
+			temp = ((BPTreeInnerNode<TKey, TValue>)temp).getChild(0);
+
+		int n = 0;
+		BPTreeNode<TKey, TValue> current = temp;
+
+		//Count total number of keys through the last level linked list
+		while (temp != null){
+
+			n += temp.getKeyCount();
+			temp = temp.rightSibling;
+		}
+
+		TValue [] values = (TValue[]) new Object[n];
+
+		//Collect all values
+		while (current != null){
+			for (int i = 0; i < current.getKeyCount(); i++) {
+				values[i] =  ((BPTreeLeafNode<TKey, TValue>) current).getValue(i);
+			}
+
+			current = current.rightSibling;
+		}
+
+		return values;
+	}
+
+
+	/*===============================================================================================================
+	============================================= Helper Functions =================================================
+	================================================================================================================*/
+
+	private BPTreeNode<TKey, TValue> getLeafNode(TKey key){
+
+		BPTreeNode<TKey, TValue> current = this;
+
+		//find leaf node where the key is
+		while(!current.isLeaf()){
+			//Search for key path
+			int i;
+			for (i = 0; i < current.keyTally; i++)
+			{
+				if (key.compareTo(current.getKey(i)) < 0)
+					break;
+			}
+
+			//get the next index node on path to key from children (references)
+			current = ((BPTreeInnerNode<TKey, TValue>) current).getChild(i);
+		}
+
+		return current;
 	}
 
 }
