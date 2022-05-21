@@ -38,6 +38,7 @@ class BPTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<T
 	public void leafInsert(TKey key, TValue value){
 
 		int i = this.getKeyCount()-1;
+		final int MAX = m-1;
 
 		//find place to insert key and value
 		while (i >= 0 && key.compareTo(this.getKey(i)) < 0){
@@ -53,6 +54,8 @@ class BPTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<T
 	}
 
 	public BPTreeNode<TKey, TValue> leafSplit(TKey key, TValue value){
+
+		final int MAX = m-1;
 		BPTreeLeafNode<TKey, TValue> node2 = new BPTreeLeafNode<>(m);
 		BPTreeLeafNode<TKey, TValue> temp = new BPTreeLeafNode<>(m+1);
 

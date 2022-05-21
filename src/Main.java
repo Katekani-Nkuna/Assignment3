@@ -61,7 +61,7 @@ public class Main {
 		System.out.println("Key not found!");
 
 	// DB student table indexes
-	BPTree<Integer, Integer> pktree = new BPTree<Integer, Integer>(3); // A B+ Tree with order 4
+	BPTree<Integer, Integer> pktree = new BPTree<Integer, Integer>(4); // A B+ Tree with order 4
 	pktree.insert(16230943, 1);
 	pktree.insert(17248830, 2);
 	pktree.insert(16094340, 3);

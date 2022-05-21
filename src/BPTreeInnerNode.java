@@ -38,6 +38,8 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 	public BPTreeNode<TKey, TValue> innerInsert(TKey key){
 
+		final int MAX = m-1;
+
 		int i = this.getKeyCount()-1;
 
 		//find place to insert key
@@ -55,6 +57,7 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 	public BPTreeNode<TKey, TValue> innerSplit(TKey key, BPTreeNode<TKey, TValue> danglingNode){
 		BPTreeInnerNode<TKey, TValue> node2 = new BPTreeInnerNode<>(m);
 		BPTreeInnerNode<TKey, TValue> temp = new BPTreeInnerNode<>(m+1);
+		final int MAX = m-1;
 
 //		if (danglingNode != null)
 //			danglingNode = this.attacheNewNode(danglingNode);
@@ -92,6 +95,7 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 	public BPTreeNode<TKey, TValue> attacheNewNode(BPTreeNode<TKey, TValue> newNode){
 		int i = this.getKeyCount();
+		final int MAX = m-1;
 
 		BPTreeNode<TKey, TValue> danglingNode = null;
 		//if the parent node is full, then either it's last ref or previous
