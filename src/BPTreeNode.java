@@ -128,7 +128,7 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 		BPTreeNode<TKey, TValue> danglingNode = null;
 		while (true){
 			//leaf node not full
-			if (node.getKeyCount() < m){
+			if (node.getKeyCount() < MAX){
 				//insert Key and increment keyTally;
 				if (node.isLeaf())
 					((BPTreeLeafNode<TKey, TValue>)node).leafInsert(key,value);
@@ -218,9 +218,10 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 		TValue [] values = (TValue[]) new Object[n];
 
 		//Collect all values
+		int index = 0;
 		while (current != null){
 			for (int i = 0; i < current.getKeyCount(); i++) {
-				values[i] =  ((BPTreeLeafNode<TKey, TValue>) current).getValue(i);
+				values[index++] =  ((BPTreeLeafNode<TKey, TValue>) current).getValue(i);
 			}
 
 			current = current.rightSibling;

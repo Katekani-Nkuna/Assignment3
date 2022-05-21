@@ -99,7 +99,7 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 		BPTreeNode<TKey, TValue> danglingNode = null;
 		//if the parent node is full, then either it's last ref or previous
-		if (i == m){
+		if (i == MAX){
 			if (newNode.getKey(0).compareTo(this.getChild(i).getKey(0)) < 0){
 				danglingNode = this.getChild(i);
 			}
