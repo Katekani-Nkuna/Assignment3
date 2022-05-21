@@ -147,7 +147,12 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 					key = newNode.getKey(0);
 				}
 				else {
+
+					TKey temp = ((BPTreeInnerNode<TKey, TValue>)node).getMiddleKey(key);
 					newNode = ((BPTreeInnerNode<TKey, TValue>)node).innerSplit(key,danglingNode);
+					//key = middle key
+					key = temp;
+
 				}
 
 				BPTreeInnerNode<TKey, TValue> parent = (BPTreeInnerNode<TKey, TValue>)node.getParent();
@@ -187,7 +192,7 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 	public BPTreeNode<TKey, TValue> delete(TKey key) 
 	{
 		// Your code goes here
-		return null;
+		return this;
 	}
 
 

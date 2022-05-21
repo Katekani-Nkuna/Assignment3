@@ -71,7 +71,7 @@ class BPTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<T
 		//insert new value on temp
 		temp.leafInsert(key, value);
 		this.keyTally = 0;
-		int mid = (int) Math.ceil(m/2);
+		int mid = m/2;
 
 		for (int i = 0; i < mid; i++){
 			this.leafInsert(temp.getKey(i),temp.getValue(i));

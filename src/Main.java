@@ -1,23 +1,50 @@
+import java.util.Random;
+
 public class Main {
 	
 
     public static void main(String[] args) 
     {
 	//General tree
-	BPTree<Integer, Integer> tree = new BPTree<Integer, Integer>(4); // A B+ Tree with order 4
+	BPTree<Integer, Integer> tree = new BPTree<Integer, Integer>(3); // A B+ Tree with order 4
    
 	tree.insert(20, 5000);
-	tree.insert(10, 1000);
-	tree.insert(30, 9000);
-	tree.insert(50, 8000);
-	tree.insert(40, 2000);
-	tree.insert(60, 7000);
-	tree.insert(90, 3000);
-	tree.insert(70, 6000);
-	tree.insert(80, 4000);
+		System.out.println("Structure of the constucted tree is: ");
+		tree.print();
+
+		tree.insert(10, 1000);
+		System.out.println("Structure of the constucted tree is: ");
+		tree.print();
+
+		tree.insert(30, 9000);
+		System.out.println("Structure of the constucted tree is: ");
+		tree.print();
+
+		tree.insert(50, 8000);
+		System.out.println("Structure of the constucted tree is: ");
+		tree.print();
+
+		tree.insert(40, 2000);
+		System.out.println("Structure of the constucted tree is: ");
+		tree.print();
+
+		tree.insert(60, 7000);
+		System.out.println("Structure of the constucted tree is: ");
+		tree.print();
+
+		tree.insert(90, 3000);
+		System.out.println("Structure of the constucted tree is: ");
+		tree.print();
+
+		tree.insert(70, 6000);
+		System.out.println("Structure of the constucted tree is: ");
+		tree.print();
+
+		tree.insert(80, 4000);
 
 	System.out.println("Structure of the constucted tree is: ");
 	tree.print();
+
 
 	Integer value = 70; // Delete leaf also internal
 	tree.delete(value);
@@ -80,7 +107,7 @@ public class Main {
 		System.out.println("Key not found!");
 
 	System.out.println("Return index tree values ordered by student id: ");
-	Object[] array = pktree.values();
+	Object[] array = tree.values();
 	if (array != null) {
 		for (int i = 0; i < array.length; i++)
 			System.out.println("Value " + array[i]);

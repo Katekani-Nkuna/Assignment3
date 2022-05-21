@@ -73,7 +73,7 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 		//insert new value on temp
 		temp.innerInsert(key);
 		this.keyTally = 0;
-		int mid = (int) Math.ceil(m/2);
+		int mid = m/2;
 
 		for (int i = 0; i < mid; i++){
 			this.innerInsert(temp.getKey(i));
@@ -81,14 +81,18 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 		this.setChild(mid,this.getChild(mid));
 
-		for (int i = mid; i < temp.getKeyCount(); i++ ){
+		int index = 0;
+		for (int i = mid+1; i < temp.getKeyCount(); i++ ){
+
 			node2.innerInsert(temp.getKey(i));
 
 			//redistribute references
-			node2.setChild(i, this.getChild(i+1));
+			node2.setChild(index++, this.getChild(i));
+			//clear that child from leftNode
+			this.setChild(i,null);
 		}
 
-		node2.setChild(m,danglingNode);
+		node2.setChild(index,danglingNode);
 
 		return node2;
 	}
@@ -118,5 +122,17 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 		return danglingNode;
 	}
 
+	TKey getMiddleKey(TKey key){
+		BPTreeInnerNode<TKey, TValue> temp = new BPTreeInnerNode<>(m+1);
+		for (int i = 0; i < this.getKeyCount(); i++){
+			temp.innerInsert(this.getKey(i));
+		}
 
+		//insert new value on temp
+		temp.innerInsert(key);
+
+		int mid = m/2;
+
+		return temp.getKey(mid);
+	}
 }
