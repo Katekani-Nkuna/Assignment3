@@ -4,7 +4,7 @@ public class Main {
 	public static void main(String[] args)
 	{
 		//General tree
-		BPTree<Integer, Integer> tree = new BPTree<Integer, Integer>(4); // A B+ Tree with order 4
+		BPTree<Integer, Integer> tree = new BPTree<Integer, Integer>(5); // A B+ Tree with order 4
 
 		tree.insert(20, 5000);
 		tree.insert(10, 1000);
