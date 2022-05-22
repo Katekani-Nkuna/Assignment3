@@ -203,7 +203,7 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 			}
 		}
 
-		final int MIN = m/2-1;
+		final int MIN = (int) (Math.ceil(m/2) -1);
 		while (true){
 
 			//Still has enough keys
