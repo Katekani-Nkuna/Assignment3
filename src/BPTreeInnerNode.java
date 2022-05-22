@@ -36,6 +36,9 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 	////// Implement functions below this line //////
 
+	/*==================================================================================================================
+	  =================================== Insertion Helper Functions ===================================================
+	  =================================== =============================================================================*/
 	public BPTreeNode<TKey, TValue> innerInsert(TKey key){
 
 		final int MAX = m-1;
@@ -135,4 +138,68 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 		return temp.getKey(mid);
 	}
+
+
+	/*==================================================================================================================
+	  =================================== Deletion Helper Functions ===================================================
+	  =================================== =============================================================================*/
+	public BPTreeNode<TKey, TValue> removeAtIndex(int index){
+
+		//shift all keys from index to the left
+		//shift all children from index to the left
+		for (int i = index; i < this.getKeyCount()-1; i++, index++){
+			this.setKey(i, this.getKey(i+1));
+			this.setChild(i, this.getChild(i+1));
+		}
+
+		//shift the last child to it's predecessor
+		this.setChild(keyTally-1,this.getChild(keyTally));
+
+		this.setKey(keyTally-1, null);
+		this.setChild(keyTally,null);
+
+		keyTally--;
+		return this;
+	}
+
+	@Override
+	public void distribute(BPTreeNode<TKey, TValue> rightNode, int index) {
+		BPTreeNode<TKey, TValue> parent = this.getParent();
+		//BPTreeLeafNode temp
+		BPTreeInnerNode<TKey, TValue> temp = new BPTreeInnerNode<>(m+1);
+
+		//Copy node keys and values to temp which is 1 space bigger than m to accomodate new key,value
+		int numKeys = this.getKeyCount();
+
+		for (int i = 0; i < numKeys; i++){
+			temp.innerInsert(this.getKey(i));
+			this.setKey(i, null);
+		}
+
+		numKeys = rightNode.getKeyCount();
+
+		for (int i = 0; i < numKeys; i++){
+			temp.innerInsert(rightNode.getKey(i));
+			rightNode.setKey(i,null);
+		}
+
+		this.keyTally = 0;
+		rightNode.keyTally = 0;
+
+		//distribute keys evenly
+		int mid = temp.getKeyCount()/2;
+		for (int i = 0; i < mid; i++){
+			this.innerInsert(temp.getKey(i));
+		}
+
+		for (int i = mid; i<temp.getKeyCount(); i++){
+			((BPTreeInnerNode<TKey, TValue>)rightNode).innerInsert(temp.getKey(i));
+		}
+
+		//place successor
+		TKey successor = rightNode.getKey(0);
+		this.setKey(this.getKeyCount(),successor);
+		parent.setKey(index,successor);
+	}
+
 }
