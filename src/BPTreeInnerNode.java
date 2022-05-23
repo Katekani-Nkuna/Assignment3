@@ -147,6 +147,10 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 		//shift all keys from index to the left
 		//shift all children from index to the left
+		if (index > 0)
+			this.getChild(index-1).rightSibling = this.getChild(index).rightSibling;
+
+
 		for (int i = index; i < this.getKeyCount()-1; i++, index++){
 			this.setKey(i, this.getKey(i+1));
 			this.setChild(i, this.getChild(i+1));
@@ -198,8 +202,47 @@ class BPTreeInnerNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<
 
 		//place successor
 		TKey successor = rightNode.getKey(0);
-		this.setKey(this.getKeyCount(),successor);
 		parent.setKey(index,successor);
+	}
+
+	@Override
+	public BPTreeNode<TKey, TValue> merge(BPTreeNode<TKey, TValue> rightNode) {
+		BPTreeNode<TKey, TValue> parent = this.getParent();
+		//BPTreeLeafNode temp
+
+		//Copy all rightNode keys to the left
+		for (int i = 0; i < rightNode.getKeyCount(); i++){
+			this.innerInsert(rightNode.getKey(i));
+		}
+
+		int index = getIndexOfNode(this);
+
+		//Delete seperator key and Shift right sibblings to the left
+		parent.removeAtIndex(index); //this function performs the above comment
+		return parent;
+	}
+
+	public BPTreeNode<TKey, TValue> removeSeperatorKey(int index){
+		//shift all keys from index to the left
+		//shift all children from index to the left
+
+			this.getChild(index).rightSibling = this.getChild(index).rightSibling.rightSibling;
+
+
+		for (int i = index; i < this.getKeyCount()-1; i++){
+			this.setKey(i, this.getKey(i+1));
+		}
+
+		for (int i = index+1; i < this.getKeyCount(); i++){
+			this.setChild(i, this.getChild(i+1));
+		}
+
+
+		this.setKey(keyTally-1, null);
+		this.setChild(keyTally,null);
+
+		keyTally--;
+		return this;
 	}
 
 }

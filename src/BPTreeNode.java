@@ -204,6 +204,7 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 		}
 
 		final int MIN = (int) (Math.ceil(m/2) -1);
+
 		while (true){
 
 			//Still has enough keys
@@ -211,11 +212,18 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 				return this;
 			}
 
+			//Empty tree
+			if (node.getKeyCount() == 0 && this == node)
+				return this;
+
 			//Underflowing Node
 			BPTreeNode<TKey, TValue> parent = node.getParent();
 
 			int index = getIndexOfNode(node);
 			BPTreeNode<TKey, TValue> sibbling;
+			BPTreeNode<TKey, TValue> leftSibbling;
+			BPTreeNode<TKey, TValue> rightSibbling;
+
 			//1. if node is leftmost node
 			if (index == 0){
 				//check if right sibbling has enough keys
@@ -225,9 +233,7 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 					node.distribute(sibbling,index);
 					return this;
 				}
-				else {
-					//else merge with right
-				}
+
 			}//2. if node is rightmost node
 			else if(index == parent.getKeyCount()){
 				//check if left sibbling has enough keys
@@ -237,16 +243,14 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 					//node.shareSuccessor(sibbling,index);
 					sibbling.distribute(node,index-1);
 					return this;
-				}else {
-					//else merge with left
 				}
-
 			}
 			//3. if node is middle node
 			else{
 				//check if left sibbling has enough keys
-				BPTreeNode<TKey, TValue> leftSibbling = ((BPTreeInnerNode<TKey, TValue>)parent).getChild(index-1);
-				BPTreeNode<TKey, TValue> rightSibbling = ((BPTreeInnerNode<TKey, TValue>)parent).getChild(index+1);
+				leftSibbling = ((BPTreeInnerNode<TKey, TValue>)parent).getChild(index-1);
+				rightSibbling = ((BPTreeInnerNode<TKey, TValue>)parent).getChild(index+1);
+
 				if (leftSibbling.hasEnoughKeys()){
 					//share keys
 					//sharePredecessor(leftSibbling,node,index);
@@ -258,11 +262,42 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 					//shareSuccessor(node,rightSibbling,index);
 					node.distribute(rightSibbling,index);
 					return this;
-				}else{
-
 				}
-				return this;
 			}
+
+			//check if parent is root
+			if (index == 0){
+				sibbling = ((BPTreeInnerNode<TKey, TValue>)parent).getChild(1);
+				if (parent == this){
+					if (parent.getKeyCount() == 1)
+						return ((BPTreeLeafNode<TKey, TValue>)node).rootMerge(sibbling);
+					else
+					{
+						node.merge(sibbling);
+						return this;
+					}
+				}
+			}
+			else if(index == parent.getKeyCount()){
+				sibbling = ((BPTreeInnerNode<TKey, TValue>)parent).getChild(index-1);
+				if (parent == this){
+					if (parent.getKeyCount() == 1)
+						return ((BPTreeLeafNode<TKey, TValue>)node).rootMerge(sibbling);
+					else
+					{
+						sibbling.merge(node);
+						return this;
+					}
+				}
+			}
+			else {
+				leftSibbling = ((BPTreeInnerNode<TKey, TValue>)parent).getChild(index-1);
+				rightSibbling = ((BPTreeInnerNode<TKey, TValue>)parent).getChild(index+1);
+
+				node = leftSibbling.merge(node);
+			}
+
+			//return this;
 		}
 
 	}
@@ -335,6 +370,7 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 
 	public abstract BPTreeNode<TKey, TValue> removeAtIndex(int index);
 	public abstract void distribute(BPTreeNode<TKey, TValue> rightNode, int index);
+	public abstract BPTreeNode<TKey, TValue> merge(BPTreeNode<TKey, TValue> rightNode);
 
 	public int getIndexOfNode(BPTreeNode<TKey, TValue> node){
 
@@ -364,14 +400,4 @@ abstract class BPTreeNode<TKey extends Comparable<TKey>, TValue> {
 
 		return null;
 	}
-
-
-//	public void mergeWithRight(BPTreeNode<TKey, TValue> leftNode, BPTreeNode<TKey, TValue> rightNode){
-//		//put everything on the left node
-//
-//		for (int i = leftNode.getKeyCount(), j = 0; j < rightNode.getKeyCount(); i++, j++){
-//			leftNode.
-//		}
-//	}
-
 }

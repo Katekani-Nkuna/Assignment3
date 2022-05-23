@@ -152,7 +152,37 @@ class BPTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BPTreeNode<T
 
 		//place successor
 		TKey successor = rightNode.getKey(0);
-		this.setKey(this.getKeyCount(),successor);
 		parent.setKey(index,successor);
+	}
+
+	@Override
+	public BPTreeNode<TKey, TValue> merge(BPTreeNode<TKey, TValue> rightNode) {
+		BPTreeNode<TKey, TValue> parent = this.getParent();
+		//BPTreeLeafNode temp
+
+		//Copy all rightNode keys to the left
+		for (int i = 0; i < rightNode.getKeyCount(); i++){
+			this.leafInsert(rightNode.getKey(i), ((BPTreeLeafNode<TKey, TValue> )rightNode).getValue(i));
+		}
+
+		int index = getIndexOfNode(this);
+
+		//Remove seperator key and Shift right keys and sibblings to the left
+		((BPTreeInnerNode<TKey,TValue>)parent).removeSeperatorKey(index); //this function performs the above comment
+		return parent;
+	}
+
+	public BPTreeNode<TKey, TValue> rootMerge(BPTreeNode<TKey, TValue> rightNode){
+		BPTreeNode<TKey, TValue> parent = this.getParent();
+		BPTreeLeafNode<TKey, TValue> newRoot = new BPTreeLeafNode<>(m);
+
+		for (int i = 0; i < this.getKeyCount(); i++){
+			newRoot.leafInsert(this.getKey(i), this.getValue(i));
+		}
+
+		for (int i = 0; i < rightNode.getKeyCount(); i++){
+			newRoot.leafInsert(rightNode.getKey(i), ((BPTreeLeafNode<TKey, TValue>)rightNode).getValue(i));
+		}
+		return newRoot;
 	}
 }
